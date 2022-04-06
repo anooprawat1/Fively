@@ -9,6 +9,8 @@ services:
     image: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - myproject
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -16,6 +18,9 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:legacy
+    container_name: "keycloak"
+    networks:
+      - myproject
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
@@ -29,3 +34,21 @@ services:
       - 8080:8080
     depends_on:
       - postgres
+
+  authservice-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    networks:
+      - myproject
+    volumes:
+      - ".:/app"
+    depends_on:
+      - keycloak
+
+networks:
+  myproject:
+    driver: bridge
