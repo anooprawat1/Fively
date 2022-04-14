@@ -7,7 +7,6 @@ class CreateUserSchema(BaseModel):
     last_name: str
     password: str
     email_id: EmailStr
-    phone_number: str
 
 
 class UserSchema(BaseModel):
@@ -19,5 +18,10 @@ class UserSchema(BaseModel):
 
 
 class LoginSchema(BaseModel):
+    email_id: EmailStr
+    password: str
+
+
+class ForgetSchema(BaseModel):
     email_id: EmailStr
     password: str
