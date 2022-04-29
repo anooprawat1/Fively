@@ -1,0 +1,33 @@
+version: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - catalogservice
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: catalog
+      POSTGRES_PASSWORD: catalog
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    networks:
+      - catalogservice
+    volumes:
+      - ".:/app"
+
+networks:
+  catalogservice:
+    driver: bridge
